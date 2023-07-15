@@ -18,34 +18,43 @@ Define a `flag.FlagSet` for the `verbose` and `workers` options:
 
 ```go
 import (
-       "flag"
-       "os"
+	"flag"
+	"fmt"
+	"os"
 
-       "github.com/peterbourgon/ff/v3"
-       "github.com/pkazmier/ffyaml"
+	"github.com/peterbourgon/ff/v3"
+	"github.com/pkazmier/ffyaml"
 )
 
-fs := flag.NewFlagSet("example", flag.ContinueOnError)
-verbose := fs.Bool("verbose", false, "enable verbose logging")
-workers := fs.Int("workers", 10, "number of workers to create")
+func main() {
+
+	fs := flag.NewFlagSet("example", flag.ContinueOnError)
+	verbose := fs.Bool("verbose", false, "enable verbose logging")
+	workers := fs.Int("workers", 10, "number of workers to create")
 ```
 
 Define the YAML configuration parser that points to the `cli` section:
 
 ```go
-parser := ffyaml.New(ffyaml.WithKeyPath("plugins", "cli"))
+	parser := ffyaml.New(ffyaml.WithKeyPath("plugins", "cli"))
 ```
 
 Then invoke `peterbourgon/ff.Parse` with this YAML configuration parser:
 
 ```go
-err := ff.Parse(fs, os.Argv[1:],
-	ff.WithConfigFile("config"),
-	ff.WithConfigFileParser(parser.Parse),
-)
+	err := ff.Parse(fs, os.Args[1:],
+		ff.WithConfigFile("config.yaml"),
+		ff.WithConfigFileParser(parser.Parse),
+	)
 
-fmt.Printf("verbose = %v", *verbose)
-fmt.Printf("workers = %v", *workers)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Printf("verbose = %v\n", *verbose)
+	fmt.Printf("workers = %v\n", *workers)
+}
 ```
 
 [1]: https://github.com/peterbourgon/ff
