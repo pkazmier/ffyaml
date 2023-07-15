@@ -14,7 +14,7 @@ plugins:
     workers: 20
 ```
 
-Define a `flag.FlagSet` for the `verbose` and `workers` options:
+The following program will parse the options from it:
 
 ```go
 import (
@@ -28,20 +28,15 @@ import (
 
 func main() {
 
+	// Define a `flag.FlagSet`
 	fs := flag.NewFlagSet("example", flag.ContinueOnError)
 	verbose := fs.Bool("verbose", false, "enable verbose logging")
 	workers := fs.Int("workers", 10, "number of workers to create")
-```
 
-Define the YAML configuration parser that points to the `cli` section:
-
-```go
+	// Define the YAML configuration parser that points to the `cli` section:
 	parser := ffyaml.New(ffyaml.WithKeyPath("plugins", "cli"))
-```
 
-Then invoke `peterbourgon/ff.Parse` with this YAML configuration parser:
-
-```go
+	// Then invoke `peterbourgon/ff.Parse` with this YAML configuration parser:
 	err := ff.Parse(fs, os.Args[1:],
 		ff.WithConfigFile("config.yaml"),
 		ff.WithConfigFileParser(parser.Parse),
