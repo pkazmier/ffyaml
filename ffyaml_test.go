@@ -139,6 +139,14 @@ func TestParserWithKeyPath(t *testing.T) {
 			want: fftest.Vars{WantParseErrorString: "error parsing YAML config: key path '[root child3]' not found"},
 		},
 		{
+			name: "no such key path, but allow",
+			file: "testdata/key_path.yaml",
+			opts: []ffyaml.Option{
+				ffyaml.WithKeyPath("no", "such", "path"),
+				ffyaml.WithAllowMissingKeyPath(true)},
+			want: fftest.Vars{},
+		},
+		{
 			name: "key path does not point to a terminal map",
 			file: "testdata/key_path.yaml",
 			opts: []ffyaml.Option{ffyaml.WithKeyPath("root", "child2", "s")},

@@ -22,7 +22,8 @@ func Parser(r io.Reader, set func(name, value string) error) error {
 // one to: place different configurations in the same file, use same file for
 // other tools, or use the same file for different instances of this parser.
 type ConfigFileParser struct {
-	path []string
+	path                []string
+	allowMissingKeyPath bool
 }
 
 // New constructs and configures a ConfigFileParser using the provided options.
@@ -44,7 +45,11 @@ func (c ConfigFileParser) Parse(r io.Reader, set func(name, value string) error)
 	for i, key := range c.path {
 		val, ok := m[key]
 		if !ok {
-			return ParseError{fmt.Errorf("key path '%s' not found", c.path[0:i+1])}
+			if c.allowMissingKeyPath {
+				return nil
+			} else {
+				return ParseError{fmt.Errorf("key path '%s' not found", c.path[0:i+1])}
+			}
 		}
 		m, ok = val.(map[string]interface{})
 		if !ok {
@@ -84,6 +89,14 @@ type Option func(*ConfigFileParser)
 func WithKeyPath(path ...string) Option {
 	return func(c *ConfigFileParser) {
 		c.path = path
+	}
+}
+
+// WithAllowMissingKeyPath tells Parse to permit the case where the key path is
+// specified but does not exist.
+func WithAllowMissingKeyPath(allow bool) Option {
+	return func(c *ConfigFileParser) {
+		c.allowMissingKeyPath = allow
 	}
 }
 
