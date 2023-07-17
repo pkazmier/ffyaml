@@ -1,6 +1,6 @@
 # ffyaml
 
-This is a YAML configuration parser for the excellent [peterbourgon/ff][1] module. It is a fork of the `ffyaml` parser included that module. This fork provides a `WithKeyPath` option to specify the location within the YAML document where the configuration resides. It allows one to use a subset of a larger configuration file.
+This is a YAML configuration parser for the excellent [peterbourgon/ff][1] module. It is a fork of the `ffyaml` parser included that module. This fork provides the `WithKeyPath` and `WithAllowMissingKeyPath` options to specify the location within the YAML document where the configuration resides. It allows one to use a subset of a larger configuration file.
 
 ## Usage
 
@@ -34,7 +34,10 @@ func main() {
 	workers := fs.Int("workers", 10, "number of workers to create")
 
 	// Define the YAML configuration parser that points to the `cli` section:
-	parser := ffyaml.New(ffyaml.WithKeyPath("plugins", "cli"))
+	parser := ffyaml.New(
+		ffyaml.WithKeyPath("plugins", "cli"),
+		ffyaml.WithAllowMissingKeyPath(true),
+	)
 
 	// Then invoke `peterbourgon/ff.Parse` with this YAML configuration parser:
 	err := ff.Parse(fs, os.Args[1:],
